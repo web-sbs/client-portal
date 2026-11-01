@@ -134,13 +134,12 @@ export class PortalHomeService {
   }
 
   private async client(userId: string): Promise<{ firstName: string | null }> {
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-      select: { name: true },
+    const contact = await this.prisma.contact.findFirst({
+      where: { userId },
+      select: { firstName: true },
     });
 
-    const firstName = user?.name?.trim().split(/\s+/)[0] || null;
-    return { firstName };
+    return { firstName: contact?.firstName?.trim() || null };
   }
 
   private async company(scope: ClientScope): Promise<{ name: string; companyAdmin: boolean } | null> {
