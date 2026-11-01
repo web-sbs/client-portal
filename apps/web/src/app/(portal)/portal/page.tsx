@@ -23,7 +23,6 @@ import type { PortalAnnouncement } from "@/lib/announcements";
 interface PortalHome {
   client: { firstName: string | null } | null;
   company: { name: string; companyAdmin: boolean } | null;
-  company: { name: string; companyAdmin: boolean } | null;
   tickets: {
     openCount: number;
     latest: { id: string; reference: string; subject: string; status: string; priority: string; lastActivityAt: string }[];
