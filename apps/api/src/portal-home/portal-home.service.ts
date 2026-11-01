@@ -57,6 +57,7 @@ export interface AnnouncementsSection {
 }
 
 export interface PortalHome {
+  client: { firstName: string | null } | null;
   company: { name: string; companyAdmin: boolean } | null;
   tickets: Section<TicketsSection>;
   invoices: Section<InvoicesSection>;
@@ -108,6 +109,7 @@ export class PortalHomeService {
     ]);
 
     const [company, tickets, invoices, renewals, updates, announcements] = await Promise.all([
+      this.safe("client", () => this.client(userId)),
       this.safe("company", () => this.company(scope)),
       this.safe("tickets", () => this.tickets(scope)),
       this.safe("invoices", () => this.invoices(organizationId, projectIds)),
@@ -117,6 +119,7 @@ export class PortalHomeService {
     ]);
 
     return {
+      client: client ?? null,
       company: company ?? null,
       tickets,
       invoices,
@@ -130,6 +133,17 @@ export class PortalHomeService {
     };
   }
 
+  private async client(userId: string): Promise<{ firstName: string | null }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { name: true },
+    });
+
+    const firstName = user?.name?.trim().split(/\s+/)[0] || null;
+
+    return { firstName };
+  }
+  
   private async company(scope: ClientScope): Promise<{ name: string; companyAdmin: boolean } | null> {
     if (!scope.companyId) return null;
     const company = await this.prisma.company.findFirst({
