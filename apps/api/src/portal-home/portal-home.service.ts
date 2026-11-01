@@ -108,7 +108,7 @@ export class PortalHomeService {
       this.projectIds(userId, organizationId, privileged),
     ]);
 
-    const [company, tickets, invoices, renewals, updates, announcements] = await Promise.all([
+    const [client, company, tickets, invoices, renewals, updates, announcements] = await Promise.all([
       this.safe("client", () => this.client(userId)),
       this.safe("company", () => this.company(scope)),
       this.safe("tickets", () => this.tickets(scope)),
@@ -140,10 +140,9 @@ export class PortalHomeService {
     });
 
     const firstName = user?.name?.trim().split(/\s+/)[0] || null;
-
     return { firstName };
   }
-  
+
   private async company(scope: ClientScope): Promise<{ name: string; companyAdmin: boolean } | null> {
     if (!scope.companyId) return null;
     const company = await this.prisma.company.findFirst({
