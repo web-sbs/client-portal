@@ -23,6 +23,8 @@ services:
       DATABASE_URL: "postgresql://${POSTGRES_USER:-atrium}:${POSTGRES_PASSWORD:-atrium}@postgres:5432/${POSTGRES_DB:-atrium}"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET}"
       WEB_URL: "${WEB_URL}"
+      STORAGE_PROVIDER: "local"
+      UPLOAD_DIR: "/app/uploads"
     volumes:
       - uploads:/app/uploads
     depends_on:
@@ -50,5 +52,7 @@ services:
 
 volumes:
   pgdata:
+    name: atrium-pgdata
   uploads:
+    name: atrium-uploads
   smtp-relay-logs:
