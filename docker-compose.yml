@@ -1,26 +1,12 @@
 services:
-  postgres:
-    image: postgres:16-alpine
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER:-atrium}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-atrium}
-      POSTGRES_DB: ${POSTGRES_DB:-atrium}
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-atrium}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   atrium:
     build:
       context: .
       dockerfile: docker/unified.Dockerfile
-    ports:
-      - "8082:8080"
+    expose:
+      - "8080"
     environment:
-      DATABASE_URL: "postgresql://${POSTGRES_USER:-atrium}:${POSTGRES_PASSWORD:-atrium}@postgres:5432/${POSTGRES_DB:-atrium}"
+      DATABASE_URL: "${DATABASE_URL}"
       BETTER_AUTH_SECRET: "${BETTER_AUTH_SECRET}"
       WEB_URL: "${WEB_URL}"
       STORAGE_PROVIDER: "local"
@@ -28,8 +14,6 @@ services:
     volumes:
       - uploads:/app/uploads
     depends_on:
-      postgres:
-        condition: service_healthy
       smtp-relay:
         condition: service_healthy
     healthcheck:
@@ -63,8 +47,6 @@ services:
       start_period: 10s
 
 volumes:
-  pgdata:
-    name: atrium-pgdata
   uploads:
     name: atrium-uploads
   smtp-relay-logs:
